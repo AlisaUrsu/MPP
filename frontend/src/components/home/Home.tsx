@@ -32,7 +32,7 @@ const Home = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
 
-    useEffect(() => {
+    /*useEffect(() => {
         const listString = window.localStorage.getItem("Games");
         if (listString) {
             setGameList(JSON.parse(listString));
@@ -40,6 +40,21 @@ const Home = () => {
         } else {
             setGameList(Games);
         }
+    }, []);*/
+
+    useEffect(() => {
+        async function loadGames() {
+            try {
+                const response = await fetch("/games", {method: "GET"});
+                const games = await response.json();
+                setGameList(games);
+            }
+            catch (error){
+                console.error(error);
+                alert(error);
+            }
+        }
+        loadGames();
     }, []);
 
     const onAddGame = () => {

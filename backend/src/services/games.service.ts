@@ -18,7 +18,9 @@ export function gameExists(title: string, releaseYear: number) {
 }
 
 export function addGame(title: string, description: string, genres: string[], releaseYear: number, rating: number, image= "../assets/placeholder.png") {
-    if (!title || typeof title !== "string" || title.length < 3) {
+    if (!title) 
+        throw new Error("Title is required!");
+    if (typeof title !== "string" || title.length < 3) {
         throw new Error("Title must be a string of at least 3 characters");
     }
     if (!releaseYear || typeof releaseYear !== "number" || releaseYear < 1958 || releaseYear > 2024) {
@@ -37,6 +39,8 @@ export function addGame(title: string, description: string, genres: string[], re
         throw new Error("Rating must be a number between 1 and 10");
     }
 
+    releaseYear = Number(releaseYear);
+    rating = Number(rating);
     const id = getNextAvailableId();
     const newGame = {id, title, releaseYear, description, genres, rating, image};
     games.push(newGame);
@@ -44,6 +48,7 @@ export function addGame(title: string, description: string, genres: string[], re
 }
 
 export function deleteGame(id: number){
+    id = Number(id);
     const index = games.findIndex(game => game.id === id);
     if (index !== -1) {
         games.splice(index, 1);
@@ -54,11 +59,18 @@ export function deleteGame(id: number){
 }
 
 export function updateGame(id:number, newTitle: string, newDescription: string, newGenres: string[], newReleaseYear: number, newRating: number, newImage= "../assets/placeholder.png"){
+    id = Number(id);
     const index = games.findIndex(game => game.id === id);
-    
-    if (!newTitle || typeof newTitle !== "string" || newTitle.length < 3) {
-        throw new Error("Title must be a string of at least 3 characters");
+
+    if (index === -1){
+        throw new Error("Game not found.")
     }
+    
+    if (!newTitle) 
+        throw new Error("Title is required!");
+    if (typeof newTitle !== "string" || newTitle.length < 3) {
+    throw new Error("Title must be a string of at least 3 characters");
+}
     if (!newReleaseYear || typeof newReleaseYear !== "number" || newReleaseYear < 1958 || newReleaseYear > 2024) {
         throw new Error("Release year must be a number between 1958 and 2024");
     }
@@ -76,10 +88,10 @@ export function updateGame(id:number, newTitle: string, newDescription: string, 
     }
 
     games[index].title = newTitle;
-    games[index].releaseYear = newReleaseYear;
+    games[index].releaseYear = Number(newReleaseYear);
     games[index].description = newDescription;
     games[index].genres = newGenres;
-    games[index].rating = newRating;
+    games[index].rating = Number(newRating);
     games[index].image = newImage;
 
     return games[index];

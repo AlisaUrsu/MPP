@@ -15,8 +15,10 @@ export const getAllGames: RequestHandler = async(req, res, next) => {
 export const addGame: RequestHandler = async(req, res, next) => {
     try{
         const { title, description, genres, releaseYear, rating, image } = req.body;
+        console.log(title);
         const newGame = gamesService.addGame(title, description, genres, releaseYear, rating, image);
-        res.status(201).json(newGame);
+        const games = gamesService.getAllGames();
+        res.status(200).json(games);
     }catch (error){
         next(error);
     }
@@ -36,7 +38,7 @@ export const updateGame: RequestHandler = async(req, res, next) => {
     try{
         const id = req.params.id;
         const {title, description, genres, releaseYear, rating, image } = req.body;
-        gamesService.updateGame(id, title, description, genres, releaseYear, rating, image);
+        const newGame = gamesService.updateGame(id, title, description, genres, releaseYear, rating, image);
         const games = gamesService.getAllGames();
         res.status(200).json(games);
     }catch (error){

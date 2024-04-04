@@ -1,9 +1,14 @@
 import express, {NextFunction, Request, Response} from "express";
 import "dotenv/config";
+import cors from "cors";
+import bodyParser from "body-parser";
 import GameModel from "./models/game.model"
 import gamesRouter from "./routes/games.routes"
 
 const app = express();
+app.use(cors());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.use("/games", gamesRouter);
 
