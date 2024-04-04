@@ -7,7 +7,7 @@ export const games = [
             "turns it on its head, and sets it against the darkly elegant backdrop of the Belle Epoque era.",
         genres: ["Action", "Dark Fantasy", "Souls-Like"],
         rating: 9.21,
-        image: "../assets/lies-of-p.png"
+        image: "lies-of-p.png"
     },
     {
         id: 2,
@@ -18,7 +18,7 @@ export const games = [
             "and constant danger and action.",
         genres: ["Sci-fi", "Open World", "Adventure", "Exploration", "Survival"],
         rating: 7.53,
-        image: "../assets/no-mans-sky.png"
+        image: "no-mans-sky.png"
     },
     {
         id: 3,
@@ -28,7 +28,7 @@ export const games = [
             "world of Cvstodia.",
         genres: ["Metroidvania", "Souls-Like", "Action", "Platformer", "Indie"],
         rating: 8.25,
-        image: "../assets/blasphemous.png"
+        image: "blasphemous.png"
     },
     {
         id: 4,
@@ -37,7 +37,7 @@ export const games = [
         description: "-Decide The Fate Of All Mankind-CAN YOU CHANGE THE COURSE OF FATE? AND SAVE THE ONES CLOSEST TO YOU?",
         genres: ["Anime", "Visual Novel", "Sci-fi"],
         rating: 9.64,
-        image: "../assets/steins-gate.png"
+        image: "steins-gate.png"
     },
     {
         id: 5,
@@ -47,7 +47,7 @@ export const games = [
         genres:
             ["Dark Fantasy", "Souls-Like", "Open World", "Action", "Exploration", "Adventure"],
         rating: 8.76,
-        image: "../assets/elden-ring.png"
+        image: "elden-ring.png"
     },
     {
         id: 6,
@@ -57,7 +57,7 @@ export const games = [
             "Having received a letter from his deceased wife, James heads to where they shared so many memories, in the hope of seeing her one more time: Silent Hill.There, by the lake, he finds a woman eerily similar to her...",
         genres: ["Metroidvania", "Souls-Like", "Action", "Platformer", "Indie"],
         rating: 8.34,
-        image: "../assets/silent-hill-2.png"
+        image: "silent-hill-2.png"
     },
     {
         id: 7,
@@ -68,7 +68,7 @@ export const games = [
         genres:
             ["Action", "Indie", "Platformer", "Survival"],
         rating: 7.85,
-        image: "../assets/risk-of-rain.png"
+        image: "risk-of-rain.png"
     },
     {
         id: 8,
@@ -79,7 +79,7 @@ export const games = [
         genres:
             ["Horror", "Strategy", "Puzzle", "Action"],
         rating: 6.96,
-        image: "../assets/hello-neighbour.png"
+        image: "hello-neighbour.png"
     },
     {
         id: 9,
@@ -90,7 +90,7 @@ export const games = [
         genres:
             ["Anime", "Horror", "Visual Novel"],
         rating: 7.28,
-        image: "../assets/doki-doki.png"
+        image: "doki-doki.png"
     },
     {
         id: 10,
@@ -99,7 +99,7 @@ export const games = [
         description: "Experience the quiet terror of this 1-bit love letter to Junji Ito and H.P. Lovecraft. Navigate a hellish roguelite reality with turn-based combat and unforgiving choices.",
         genres: ["Anime", "Turn-Based", "Indie", "Horror", "Survival"],
         rating: 8.37,
-        image: "../assets/world-of-horror.png"
+        image: "world-of-horror.png"
     },
     {
         id: 11,
@@ -109,7 +109,7 @@ export const games = [
             "Humanity has been driven from the Earth by mechanical beings from another world. In a final effort to take back the planet, the human resistance sends a force of android soldiers to destroy the invaders.",
         genres: ["Action", "Open World", "Fighting", "Sci-fi", "Adventure"],
         rating: 9.54,
-        image: "../assets/nier-automata.png"
+        image: "nier-automata.png"
     },
     {
         id: 12,
@@ -119,7 +119,7 @@ export const games = [
         genres:
             ["Action", "Horror", "Open World", "Adventure"],
         rating: 7.72,
-        image: "../assets/prototype.png"
+        image: "prototype.png"
     },
     {
         id: 13,
@@ -128,7 +128,7 @@ export const games = [
         description: "Live a week in the life of \"The Postal Dude\"; a hapless everyman just trying to check off some chores. Buying milk, returning an overdue library book, getting Gary Coleman's autograph, what could possibly go wrong?",
         genres:["Action", "Adventure", "Fighting", "FPS", "Open World"] ,
         rating: 6.48,
-        image: "../assets/postal2.png"
+        image: "postal2.png"
     },
     {
         id: 14,
@@ -138,7 +138,7 @@ export const games = [
         genres:
             ["Horror", "Strategy", "Puzzle", "Action"],
         rating: 7.19,
-        image: "../assets/subnautica.png"
+        image: "subnautica.png"
     }
     ,
     {
@@ -149,7 +149,7 @@ export const games = [
         genres:
             ["Fighting", "Action", "Open World", "TPS"],
         rating: 8.27,
-        image: "../assets/sleeping-dogs.png"
+        image: "sleeping-dogs.png"
     },
     {
         id: 16,
@@ -159,6 +159,6 @@ export const games = [
         genres:
             ["Horror", "Strategy", "Puzzle", "Action"],
         rating: 8.43,
-        image: "../assets/stardew-valley.png"
+        image: "stardew-valley.png"
     }
 ]

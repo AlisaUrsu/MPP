@@ -1,5 +1,6 @@
 import {getAllGames, addGame, deleteGame, updateGame} from "../controllers/games.controllers";
 import express from "express";
+import request from "supertest";
 
 const router = express.Router();
 

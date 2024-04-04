@@ -45,7 +45,7 @@ const Home = () => {
     useEffect(() => {
         async function loadGames() {
             try {
-                const response = await fetch("/games", {method: "GET"});
+                const response = await fetch("http://localhost:5000/games", {method: "GET"});
                 const games = await response.json();
                 setGameList(games);
             }
@@ -56,6 +56,7 @@ const Home = () => {
         }
         loadGames();
     }, []);
+
 
     const onAddGame = () => {
         setShownPage(PageEnum.add);

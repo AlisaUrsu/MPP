@@ -22,10 +22,11 @@ describe("Game functions", () =>{
           releaseYear: 2021,
           description: "This is a new game.",
           genres: ["Action", "Adventure"],
-          rating: 8.5
+          rating: 8.5,
+          image: "lies-of-p.png"
         };
     
-        const addedGame = addGame(newGame.title, newGame.description, newGame.genres, newGame.releaseYear, newGame.rating);
+        const addedGame = addGame(newGame.title, newGame.description, newGame.genres, newGame.releaseYear, newGame.rating, newGame.image);
     
         expect(addedGame.title).toBe(newGame.title);
         expect(addedGame.releaseYear).toBe(newGame.releaseYear);

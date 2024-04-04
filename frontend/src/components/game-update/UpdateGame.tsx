@@ -144,6 +144,10 @@ const UpdateGame = (props: Props) => {
         }
     };
 
+    function ExtractImageName(address: string) {
+        return address.split("/").slice(-1);
+      }
+
     return (
         <>
             <div className="container-form">

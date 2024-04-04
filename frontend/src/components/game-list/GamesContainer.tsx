@@ -33,6 +33,9 @@ const GamesContainer = (props: Props) => {
             closeModal();
         }
     }
+    function ExtractImageName(address: string) {
+        return address.split("/").slice(-1);
+      }
 
     return (
         <>
@@ -41,7 +44,7 @@ const GamesContainer = (props: Props) => {
                     return (
                         <>
                 <div className="game" data-testid="game" key={game.id}>
-                    <img src={game.image} alt=""/>
+                    <img src={require(`../../assets/${ExtractImageName(game.image)}`)} alt=""/>
                                 <div className="game-details">
                                     <div className="game-title">{game.title}</div>
                                     <div className="game-release">{game.releaseYear}</div>

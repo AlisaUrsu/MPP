@@ -17,7 +17,7 @@ export function gameExists(title: string, releaseYear: number) {
     return games.some(game => game.title === title && game.releaseYear === releaseYear);
 }
 
-export function addGame(title: string, description: string, genres: string[], releaseYear: number, rating: number, image= "../assets/placeholder.png") {
+export function addGame(title: string, description: string, genres: string[], releaseYear: number, rating: number, image: string) {
     if (!title) 
         throw new Error("Title is required!");
     if (typeof title !== "string" || title.length < 3) {
@@ -58,7 +58,7 @@ export function deleteGame(id: number){
     }
 }
 
-export function updateGame(id:number, newTitle: string, newDescription: string, newGenres: string[], newReleaseYear: number, newRating: number, newImage= "../assets/placeholder.png"){
+export function updateGame(id:number, newTitle: string, newDescription: string, newGenres: string[], newReleaseYear: number, newRating: number, newImage= "placeholder.png"){
     id = Number(id);
     const index = games.findIndex(game => game.id === id);
 
