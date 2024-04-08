@@ -74,4 +74,15 @@ describe("Games Routes", () => {
         expect(response.status).toBe(200);
         expect(response.body.length).toBe(16);
     });
+
+    test("GET /games/filter should respond with 200", async () => {
+        const response = await request(app).get("/games/filter").query({ description: "action" });
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+    });
+
+    test("GET /games/filter should respond with 400", async () => {
+        const response = await request(app).get("/games/filter").query({ description: "" });
+        expect(response.status).toBe(400);
+    });
   });

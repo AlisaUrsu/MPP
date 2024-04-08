@@ -44,7 +44,7 @@ const GamesContainer = (props: Props) => {
                     return (
                         <>
                 <div className="game" data-testid="game" key={game.id}>
-                    <img src={require(`../../assets/${ExtractImageName(game.image)}`)} alt=""/>
+                    <img src={game.image} alt=""/>
                                 <div className="game-details">
                                     <div className="game-title">{game.title}</div>
                                     <div className="game-release">{game.releaseYear}</div>

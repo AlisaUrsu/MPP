@@ -66,9 +66,26 @@ const Home = () => {
         setShownPage(PageEnum.list);
     };
 
-    const addGame = (data: IGame) => {
+    /*const addGame = (data: IGame) => {
         setGameList([...gameList, data]);
         updateLocalStorage([...gameList, data]);
+    };*/
+
+    const addGame = async (data:IGame) => {
+        try {
+            const response = await fetch("http://localhost:5000/games", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            const newGame = await response.json();
+            setGameList([...gameList, newGame]);
+        } catch (error) {
+            console.error(error);
+            alert("Error adding game");
+        }
     };
 
     const deleteGame = (data: IGame) => {

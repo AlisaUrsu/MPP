@@ -20,7 +20,7 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction)=>{
     console.error(error);
     let errorMessage = "An unknown error occurred.";
     if (error instanceof Error) errorMessage = error.message;
-    res.status(500).json({error: errorMessage});
+    res.status(450).json({error: errorMessage});
 });
 
 

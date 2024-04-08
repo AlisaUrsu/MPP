@@ -1,4 +1,4 @@
-import { getAllGames, getNextAvailableId, gameExists, addGame, deleteGame, updateGame, getGameById } from "../services/games.service";
+import { getAllGames, getNextAvailableId, gameExists, addGame, deleteGame, updateGame, getGameById, filterGamesByDescription } from "../services/games.service";
 import { games } from "../models/games";
 
 describe("Game functions", () =>{
@@ -46,17 +46,27 @@ describe("Game functions", () =>{
           expect(games.length).toBe(15);
       });
 
-      test('updateGame', () => {
-        updateGame(2, "New Title", "New Description", ["Indie"], 2022, 8.0, "newImage.png");
-        const updatedGame = getGameById(2);
-        expect(updatedGame.title).toBe("New Title");
-        expect(updatedGame.description).toBe("New Description");
-        expect(updatedGame.genres).toEqual(["Indie"]);
-        expect(updatedGame.releaseYear).toBe(2022);
-        expect(updatedGame.rating).toBe(8.0);
-        expect(updatedGame.image).toBe("newImage.png");
-        expect(games.length).toBe(15);
+      test("updateGame", () => {
+          updateGame(2, "New Title", "New Description", ["Indie"], 2022, 8.0, "newImage.png");
+          const updatedGame = getGameById(2);
+          expect(updatedGame.title).toBe("New Title");
+          expect(updatedGame.description).toBe("New Description");
+          expect(updatedGame.genres).toEqual(["Indie"]);
+          expect(updatedGame.releaseYear).toBe(2022);
+          expect(updatedGame.rating).toBe(8.0);
+          expect(updatedGame.image).toBe("newImage.png");
+          expect(games.length).toBe(15);
     });
 
+      test("filterGamesByDescription", () => {
+          let filteredGames = filterGamesByDescription("action");
+          expect(filteredGames.length).toBe(2);
+          filteredGames = filterGamesByDescription("love");
+          expect(filteredGames.length).toBe(0);
+          filteredGames = filterGamesByDescription("by");
+          expect(filteredGames.length).toBe(2);
+          filteredGames = filterGamesByDescription("idk");
+          expect(filteredGames.length).toBe(0);
+       });
     
 })
