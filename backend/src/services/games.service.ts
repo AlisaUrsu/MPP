@@ -25,6 +25,10 @@ export class GameService{
         return this.getAllGames().some(game => game.title === title && game.releaseYear === releaseYear);
     }
 
+    public gameExistsWithDifferentID(title: string, releaseYear: number, id:number) {
+        return this.getAllGames().some(game => game.title === title && game.releaseYear === releaseYear && game.id !== id);
+    }
+
     public addGame(title: string, description: string, genres: string[], releaseYear: number, rating: number, image: string) {
         if (this.gameExists(title, releaseYear)){
             throw new Error("Game already exists!");
@@ -62,7 +66,7 @@ export class GameService{
             throw new Error("Game not found.")
         }
         
-        if (this.gameExists(newTitle, newReleaseYear)){
+        if (this.gameExistsWithDifferentID(newTitle, newReleaseYear, id)){
             throw new Error("Game already exists!");
         }
 
@@ -106,16 +110,16 @@ export class GameService{
         return this.getAllGames().sort((a, b) => a.id - b.id);
     };
 
-    public getGamesByPage(currentPage: number, recordsPerPage: number) {
+    public getGamesByPage(currentPage: number, recordsPerPage: any) {
         const indexOfLastRecord = currentPage * recordsPerPage;
         const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
         const currentRecords = this.getAllGames().slice(indexOfFirstRecord, indexOfLastRecord);
         const totalPages = Math.ceil(this.getAllGames().length / recordsPerPage);
 
-        return { currentRecords, totalPages };
+        return { currentRecords, totalPages};
     }
 
-    public getPieChartData() {
+    public getChartData() {
         const games = this.getAllGames();
         const genreFrequency: { [genre: string]: number } = {};
 

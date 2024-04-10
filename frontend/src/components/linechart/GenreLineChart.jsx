@@ -2,7 +2,7 @@ import {useEffect, useRef} from "react";
 import {Genres} from "../Genres";
 import Chart from 'chart.js/auto';
 
-export const GenreLineChart = ({games}) => {
+export const GenreLineChart = ({genresData}) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
@@ -12,14 +12,8 @@ export const GenreLineChart = ({games}) => {
             chartInstance.current.destroy();
         }
 
-        const groupedData = Genres.reduce((acc, genre) => {
-            const count = games.filter(game => game.genres.includes(genre)).length;
-            acc[genre] = count;
-            return acc;
-        }, {});
-
-        const labels = Object.keys(groupedData);
-        const counts = Object.values(groupedData);
+        const labels = Object.keys(genresData);
+        const counts = Object.values(genresData);
 
         chartInstance.current = new Chart(ctx, {
             type: 'line',
@@ -57,7 +51,7 @@ export const GenreLineChart = ({games}) => {
                 chartInstance.current.destroy();
             }
         };
-    }, [games]);
+    }, [genresData]);
 
 
     return (

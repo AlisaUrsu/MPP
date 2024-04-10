@@ -88,7 +88,7 @@ export class GameRepository {
                 2001,
             
                     "Having received a letter from his deceased wife, James heads to where they shared so many memories, in the hope of seeing her one more time: Silent Hill.There, by the lake, he finds a woman eerily similar to her...",
-                ["Metroidvania", "Souls-Like", "Action", "Platformer", "Indie"],
+                ["Horror", "Survival", "Action", "Mystery"],
                  8.34,
                 "https://images.igdb.com/igdb/image/upload/t_cover_big/co5wkr.png"
             ),

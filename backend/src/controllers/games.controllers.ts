@@ -174,9 +174,9 @@ export class Controller {
         }
     }
 
-    public getPieChart: RequestHandler = async(req, res, next) => {
+    public getChart: RequestHandler = async(req, res, next) => {
         try {
-            const genres = this.service.getPieChartData();
+            const genres = this.service.getChartData();
             res.status(200).json(genres);
         } catch (error) {
             next(error);
@@ -188,8 +188,8 @@ export class Controller {
         try {
             const page = Number(req.query.page);
             const records = Number(req.query.records);
-            const paginatedGames = this.service.getGamesByPage(page, records);
-            res.status(200).json(paginatedGames);
+            const { currentRecords, totalPages} = this.service.getGamesByPage(page, records);
+            res.status(200).json({ currentRecords, totalPages });
         } catch (error) {
             next(error);
         
@@ -199,11 +199,11 @@ export class Controller {
     public filterGamesByGenres: RequestHandler = async(req, res, next) => {
         try {
             let genres: string[] = [];
-            // Check if genres parameter is provided and ensure it's an array of strings
+
             if (req.query.genres) {
                 genres = Array.isArray(req.query.genres)
-                    ? (req.query.genres as string[]) // Type assertion to string array
-                    : [req.query.genres as string]; // Type assertion to string array with one element
+                    ? (req.query.genres as string[]) 
+                    : [req.query.genres as string];
             }
         
             const filteredGames = this.service.filterGamesByGenres(genres);

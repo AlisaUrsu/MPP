@@ -17,7 +17,7 @@ router.delete("/delete/:id", controller.deleteGame);
 router.get("/filter", controller.filterGamesByDescription);
 router.get("/sort/:sortOption", controller.getGamesSorted);
 router.get("/search", controller.searchGamesByTitle);
-router.get("/pie-chart", controller.getPieChart);
+router.get("/chart", controller.getChart);
 router.get("/page", controller.getGamesByPage);
 router.get("/filter/genres", controller.filterGamesByGenres);
 export default router;  

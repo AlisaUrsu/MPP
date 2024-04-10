@@ -31,23 +31,16 @@ const Home = () => {
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [recordsPerPage, setRecordsPerPage] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
+    const [genresData, setGenresData] = useState<{ [genre: string]: number }>({});
 
     /*useEffect(() => {
-        const listString = window.localStorage.getItem("Games");
-        if (listString) {
-            setGameList(JSON.parse(listString));
-            sortIncreaseGamesByID(gameList);
-        } else {
-            setGameList(Games);
-        }
-    }, []);*/
-
-    useEffect(() => {
         async function loadGames() {
             try {
                 const response = await fetch("http://localhost:5000/games", {method: "GET"});
                 const games = await response.json();
                 setGameList(games);
+                setSelectedSortOption("")
             }
             catch (error){
                 console.error(error);
@@ -55,8 +48,7 @@ const Home = () => {
             }
         }
         loadGames();
-    }, []);
-
+    }, []);*/
 
     const onAddGame = () => {
         setShownPage(PageEnum.add);
@@ -66,14 +58,10 @@ const Home = () => {
         setShownPage(PageEnum.list);
     };
 
-    /*const addGame = (data: IGame) => {
-        setGameList([...gameList, data]);
-        updateLocalStorage([...gameList, data]);
-    };*/
 
-    const addGame = async (data:IGame) => {
+    const addGame = async (data: IGame) => {
         try {
-            const response = await fetch("http://localhost:5000/games", {
+            const response = await fetch("http://localhost:5000/games/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -88,10 +76,17 @@ const Home = () => {
         }
     };
 
-    const deleteGame = (data: IGame) => {
-        const updatedGameList = gameList.filter((game) => game.id !== data.id);
-        setGameList(updatedGameList);
-        updateLocalStorage(updatedGameList);
+    const deleteGame = async (data: IGame) => {
+        try {
+            await fetch(`http://localhost:5000/games/delete/${data.id}`, {
+                method: "DELETE",
+            });
+            const updatedGameList = gameList.filter((game) => game.id !== data.id);
+            setGameList(updatedGameList);
+        } catch (error) {
+            console.error(error);
+            alert("Error deleting game");
+        }
     };
 
     const onUpdateGame = (data: IGame) => {
@@ -103,52 +98,48 @@ const Home = () => {
         setShownPage(PageEnum.barchart);
     }
 
-    const updateGame = (data: IGame) => {
-        const updatedGameList = gameList.map((game) =>
-            game.id === data.id ? data : game
-        );
-        setGameList(updatedGameList);
-        updateLocalStorage(updatedGameList);
+    const updateGame = async (data: IGame) => {
+        try {
+            const response = await fetch(`http://localhost:5000/games/update/${data.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            const updatedGame = await response.json();
+            const updatedGameList = gameList.map((game) =>
+                game.id === updatedGame.id ? updatedGame : game
+            );
+            setGameList(updatedGameList);
+        } catch (error) {
+            console.error(error);
+            alert("Error updating game");
+        }
     };
 
-    const updateLocalStorage = (list: IGame[]) => {
-        window.localStorage.setItem("Games", JSON.stringify(list));
-    };
-
+    
     const handleSortOptionChanged = (e:any) => {
         const selectedOption = e.target.value;
         setSelectedSortOption(selectedOption);
-
-        let sortedList : IGame[] = [];
-
-        switch (selectedOption){
-            case "alphabetically-decrease":
-                sortedList = sortDecreaseGamesByTitle(gameList);
-                break;
-            case "alphabetically-increase":
-                sortedList = sortIncreaseGamesByTitle(gameList);
-                break;
-            case "year-increase":
-                sortedList = sortIncreaseGamesByYear(gameList);
-                break;
-            case "year-decrease":
-                sortedList = sortDecreaseGamesByYear(gameList);
-                break;
-            case "rating-increase":
-                sortedList = sortIncreaseGamesByRating(gameList);
-                break;
-            case "rating-decrease":
-                sortedList = sortDecreaseGamesByRating(gameList);
-                break;
-            case "not-sorted":
-                sortedList = sortIncreaseGamesByID(gameList);
-                break;
-            default:
-                sortedList = gameList;
-                break;
+    };
+    
+    const sortGames = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/games/sort/${selectedSortOption}`, { method: "GET" });
+            const games = await response.json();
+            setGameList(games);
+        } catch (error) {
+            console.error(error);
+            alert(error);
         }
-        setGameList(sortedList);
-    }
+    };
+    
+    useEffect(() => {
+        if (selectedSortOption) {
+            sortGames();
+        }
+    }, [selectedSortOption]);
 
     const handleSearchInputChange = (e: any) => {
         setSearchInput(e.target.value);
@@ -157,18 +148,47 @@ const Home = () => {
     const handleGenreFilterChange = (e: any) => {
         const genre = e.target.value;
         const isChecked = e.target.checked;
-
+    
         if (isChecked) {
             setSelectedGenres([...selectedGenres, genre]);
         } else {
             setSelectedGenres(selectedGenres.filter(item => item !== genre));
         }
+
     };
 
-    const filteredGames = gameList.filter((game) =>
-        game.title.toLowerCase().includes(searchInput.toLowerCase()) &&
-        (selectedGenres.length === 0 || selectedGenres.some((genre) => game.genres.includes(genre)))
-    );
+    useEffect(() => {
+        const filterGamesByGenres = async () => {
+            try {
+                const queryParams = selectedGenres.map(genre => `genres=${encodeURIComponent(genre)}`).join('&');
+                const response = await fetch(`http://localhost:5000/games/filter/genres?${queryParams}`, { method: "GET" });
+                const games = await response.json();
+                setGameList(games);
+            } catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        };
+    
+        filterGamesByGenres();
+    }, [selectedGenres]);
+    
+    
+    useEffect(() => {
+        async function loadGames() {
+            try {
+                const response = await fetch(`http://localhost:5000/games/page?page=${currentPage}&records=${recordsPerPage}`, { method: "GET" });
+                const { currentRecords, totalPages} = await response.json();
+                setGameList(currentRecords);
+                setTotalPages(totalPages);
+                setSelectedSortOption("");
+            } catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        }
+        loadGames();
+    }, [currentPage, recordsPerPage]);
 
     const handleRecordsPerPageChange = (e:any) => {
         setRecordsPerPage(parseInt(e.target.value));
@@ -179,10 +199,21 @@ const Home = () => {
         setCurrentPage(page);
     };
 
-    const indexOfLastRecord = currentPage * recordsPerPage;
-    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-    const currentRecords = filteredGames.slice(indexOfFirstRecord, indexOfLastRecord);
-    const totalPages = Math.ceil(filteredGames.length / recordsPerPage);
+    useEffect(() => {
+        async function fetchChartData() {
+            try {
+                const response = await fetch("http://localhost:5000/games/chart");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch chart data");
+                }
+                const data = await response.json();
+                setGenresData(data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchChartData();
+    }, []);
 
     return (
         <>
@@ -236,7 +267,7 @@ const Home = () => {
                                 <option value={5}>5 per page</option>
                                 <option value={10}>10 per page</option>
                                 <option value={20}>20 per page</option>
-                                <option value={filteredGames.length}>All</option>
+                                <option value={gameList.length}>All</option>
                             </select>
                             <button
                                 className="add-button"
@@ -248,12 +279,12 @@ const Home = () => {
                         <section className="filter"></section>
                         <section className="content">
                             <GamesContainer
-                                list={currentRecords}
+                                list={gameList}
                                 onDeleteButton={deleteGame}
                                 onUpdateButton={onUpdateGame}
                             />
                         </section>
-                        {recordsPerPage !== filteredGames.length && (
+                    
                         <div className="pagination">
                             <button
                                 onClick={() => onPageChange(currentPage - 1)}
@@ -274,12 +305,12 @@ const Home = () => {
                             </div>
                             <button
                                 onClick={() => onPageChange(currentPage + 1)}
-                                disabled={indexOfLastRecord >= gameList.length}
+                                disabled={currentPage === totalPages}
                             >
                                 Next
                             </button>
                         </div>
-                            )}
+                           
                     </>
                 )}
                 {shownPage === PageEnum.add && (
@@ -297,8 +328,8 @@ const Home = () => {
                 )}
                 {shownPage === PageEnum.barchart && (
                     <>
-                    <GenreBarChart games={gameList} onBackButton={showGamesPage}/>
-                    <GenreLineChart games={gameList}/>
+                    <GenreBarChart genresData={genresData} onBackButton={showGamesPage}/>
+                    <GenreLineChart genresData={genresData}/>
                     </>
                 )}
             </div>

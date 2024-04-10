@@ -4,7 +4,7 @@ import {useEffect, useRef} from "react";
 import {IGame} from "../Games.type";
 import {Genres} from "../Genres";
 Chart.defaults.color = '#fff'
-const GenreBarChart = ({games, onBackButton}) => {
+const GenreBarChart = ({genresData, onBackButton}) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
@@ -14,14 +14,10 @@ const GenreBarChart = ({games, onBackButton}) => {
             chartInstance.current.destroy();
         }
 
-        const groupedData = Genres.reduce((acc, genre) => {
-            const count = games.filter(game => game.genres.includes(genre)).length;
-            acc[genre] = count;
-            return acc;
-        }, {});
+        
 
-        const labels = Object.keys(groupedData);
-        const counts = Object.values(groupedData);
+        const labels = Object.keys(genresData);
+        const counts = Object.values(genresData);
 
         chartInstance.current = new Chart(ctx, {
             type: 'bar',
@@ -60,7 +56,7 @@ const GenreBarChart = ({games, onBackButton}) => {
                 chartInstance.current.destroy();
             }
         };
-    }, [games]);
+    }, [genresData]);
 
     const handleBackButtonClick = () => {
         onBackButton();
