@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import GameModel from "../models/game.model"
 import { genres as validGenres } from "../models/genres";
 import { GameService } from "../services/games.service";
+import {ratingCategories} from "../models/ratingCategories"
 
 export class Controller {
     private service: GameService;
@@ -212,5 +213,26 @@ export class Controller {
             next(error);
         }
     };
+    
+    public filterGamesByRating: RequestHandler = async(req, res, next) => {
+        try{
+            const ratingCategory = req.params.ratingCategory;
+            if (!ratingCategory || !ratingCategories.includes(ratingCategory)) {
+                return res.status(400).json({ error: "Invalid or missing rating category" });
+            }
+            const [minRating, maxRating] = ratingCategory.split("-").map(parseFloat);
+            const filteredGames = this.service.getAllGames().filter(game => game.rating >= minRating && game.rating <= maxRating);
+            res.json(filteredGames);
+        }  catch (error) {
+            next(error);
+        }
+    };
 
+    public getRatingCategories: RequestHandler = async(req, res, next) => {
+        try{
+            res.status(200).json(ratingCategories);
+        }catch (error){
+            next(error);
+        }
+    }
 }

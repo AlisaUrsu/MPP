@@ -7,6 +7,7 @@ import { GameService } from "../services/games.service";
 const repo = new GameRepository();
 repo.populateRepo();
 const service = new GameService(repo);
+service.sortIncreaseGamesByID();
 const controller = new Controller(service);
 const router = express.Router();
 
@@ -20,4 +21,6 @@ router.get("/search", controller.searchGamesByTitle);
 router.get("/chart", controller.getChart);
 router.get("/page", controller.getGamesByPage);
 router.get("/filter/genres", controller.filterGamesByGenres);
+router.get("/filter/ratingCategories/:ratingCategory", controller.filterGamesByRating);
+router.get("/filter/ratingCategories", controller.getRatingCategories);
 export default router;  

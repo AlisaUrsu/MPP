@@ -1,72 +1,114 @@
-import { getAllGames, getNextAvailableId, gameExists, addGame, deleteGame, updateGame, getGameById, filterGamesByDescription } from "../services/games.service";
-import { games } from "../models/games";
+import { GameService } from "../services/games.service";
+import { GameRepository } from "../repository/games.repository";
+import { Game } from "../models/game";
+import {genres as validGenres} from "../models/genres";
 
-describe("Game functions", () =>{
+describe("GameService", () => {
+  let gameService: GameService;
+  let gameRepository: GameRepository;
+
+  beforeEach(() => {
+    gameRepository = new GameRepository();
+    
+    gameRepository.addGame(new Game(
+      1,
+      "Mock Game 1",
+      2022,
+      "Description of Mock Game 1",
+      ["Action, Horror, Survival"],
+      8.5,
+      "https://example.com/mock_game1_image.png"
+    ));
+
+    gameRepository.addGame(new Game(
+      2,
+      "Mock Game 2",
+      2023,
+      "Description of Mock Game 2",
+      ["Action, Indie"],
+      7.8,
+      "https://example.com/mock_game2_image.png"
+    ))
+    gameService = new GameService(gameRepository);
+  });
   
-    test("getAllGames should return all games", () => {
-        expect(getAllGames()).toEqual(games);
-      });
+  test("should add a game", () => {
+    const initialLength = gameService.getAllGames().length;
+    const addedGame = gameService.addGame(
+      "New Game",
+      "Description of New Game",
+      ["Sci-fi, Anime"],
+      2024,
+      7.5,
+      "https://example.com/new_game_image.png"
+    );
 
-      test("getNextAvailableId should return the next available ID", () => {
-        expect(getNextAvailableId()).toBe(17);
-      });
-    
-      test("gameExists test", () => {
-        expect(gameExists("Lies of P", 2023)).toBe(true);
-        expect(gameExists("Elden Bling", 2023)).toBe(false);
-      });
+    expect(addedGame).toBeInstanceOf(Game);
+    expect(addedGame.id).toBeDefined();
+    expect(gameService.getAllGames().length).toBe(initialLength + 1);
+  });
 
-      test("addGame - test when all inputs are alright", () => {
-        const newGame = {
-          title: "Game 1",
-          releaseYear: 2021,
-          description: "This is a new game.",
-          genres: ["Action", "Adventure"],
-          rating: 8.5,
-          image: "lies-of-p.png"
-        };
-    
-        const addedGame = addGame(newGame.title, newGame.description, newGame.genres, newGame.releaseYear, newGame.rating, newGame.image);
-    
-        expect(addedGame.title).toBe(newGame.title);
-        expect(addedGame.releaseYear).toBe(newGame.releaseYear);
-        expect(addedGame.description).toBe(newGame.description);
-        expect(addedGame.genres).toEqual(newGame.genres);
-        expect(addedGame.rating).toBe(newGame.rating);
-    
-        expect(games).toContainEqual(addedGame);
-        expect(games.length).toBe(17);
-      });
+  test("should retrieve a game by ID", () => {
+    const retrievedGame = gameService.getGameById(1);
 
-      test("deleteGame", () => {
-          deleteGame(1);
-          expect(games.length).toBe(16);
-          expect(games.find(game => game.id === 1)).toBeUndefined();
-          deleteGame(10);
-          expect(games.length).toBe(15);
-      });
+    expect(retrievedGame).toBeInstanceOf(Game);
+    expect(retrievedGame.id).toEqual(1);
+  });
 
-      test("updateGame", () => {
-          updateGame(2, "New Title", "New Description", ["Indie"], 2022, 8.0, "newImage.png");
-          const updatedGame = getGameById(2);
-          expect(updatedGame.title).toBe("New Title");
-          expect(updatedGame.description).toBe("New Description");
-          expect(updatedGame.genres).toEqual(["Indie"]);
-          expect(updatedGame.releaseYear).toBe(2022);
-          expect(updatedGame.rating).toBe(8.0);
-          expect(updatedGame.image).toBe("newImage.png");
-          expect(games.length).toBe(15);
-    });
+  it("should update a game by ID", () => {
+    const updatedGame = gameService.updateGame(
+      1,
+      "Updated Game Title",
+      "Updated Description",
+      ["Exploration, Space"],
+      2010,
+      9.0,
+      "https://example.com/updated_game_image.png"
+    );
 
-      test("filterGamesByDescription", () => {
-          let filteredGames = filterGamesByDescription("action");
-          expect(filteredGames.length).toBe(2);
-          filteredGames = filterGamesByDescription("love");
-          expect(filteredGames.length).toBe(0);
-          filteredGames = filterGamesByDescription("by");
-          expect(filteredGames.length).toBe(2);
-          filteredGames = filterGamesByDescription("idk");
-          expect(filteredGames.length).toBe(0);
-       });
-    
-})
+    expect(updatedGame.title).toEqual("Updated Game Title");
+    expect(updatedGame.description).toEqual("Updated Description");
+    expect(updatedGame.genres).toEqual(["Exploration, Space"]);
+    expect(updatedGame.releaseYear).toEqual(2010);
+    expect(updatedGame.rating).toEqual(9.0);
+    expect(updatedGame.image).toEqual("https://example.com/updated_game_image.png");
+  });
+
+  test("should filter games by description", () => {
+    const filteredGames = gameService.filterGamesByDescription("description");
+
+    expect(filteredGames.length).toBeGreaterThan(0);
+    expect(filteredGames.every(game => game.description.toLowerCase().includes("description"))).toBe(true);
+  });
+
+  test("should sort games in decreasing order by title", () => {
+    const sortedGames = gameService.sortDecreaseGamesByTitle();
+    const titles = sortedGames.map(game => game.title);
+
+    expect(titles).toEqual(titles.slice().sort().reverse());
+  });
+
+  test("should retrieve games by page", () => {
+    const currentPage = 1;
+    const recordsPerPage = 5;
+    const { currentRecords, totalPages } = gameService.getGamesByPage(currentPage, recordsPerPage);
+
+    expect(currentRecords.length).toBeLessThanOrEqual(recordsPerPage);
+    expect(totalPages).toBe(Math.ceil(gameRepository.getAllGames().length / recordsPerPage));
+  });
+
+
+  test("should filter games by genres", () => {
+    const genres = ["Test Genre"];
+    const filteredGames = gameService.filterGamesByGenres(genres);
+
+    expect(filteredGames.every(game => game.genres.some(genre => genres.includes(genre)))).toBe(true);
+  });
+
+  test("should search games by title", () => {
+    const searchText = "Test";
+    const searchedGames = gameService.searchGamesByTitle(searchText);
+
+    expect(searchedGames.every(game => game.title.toLowerCase().includes(searchText.toLowerCase()))).toBe(true);
+  });
+});

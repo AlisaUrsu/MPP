@@ -7,15 +7,6 @@ import {IGame} from "../Games.type";
 import AddGame from "../game-add/AddGame";
 import {PageEnum} from "../Page.Operations";
 import UpdateGame from "../game-update/UpdateGame";
-import {
-    sortDecreaseGamesByRating,
-    sortDecreaseGamesByTitle,
-    sortDecreaseGamesByYear,
-    sortIncreaseGamesByID,
-    sortIncreaseGamesByRating,
-    sortIncreaseGamesByTitle,
-    sortIncreaseGamesByYear
-} from "../Service";
 import {BarChart} from "@mui/x-charts";
 import {Genres} from "../Genres";
 import GenreBarChart from "../barchart/GenreBarChart";
@@ -33,6 +24,9 @@ const Home = () => {
     const [recordsPerPage, setRecordsPerPage] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
     const [genresData, setGenresData] = useState<{ [genre: string]: number }>({});
+    const [ratingCategories, setRatingCategories] = useState<string[]>([]);
+    const [selectedRatingCategory, setSelectedRatingCategory] = useState("");
+    const [filteredGameList, setFilteredGameList] = useState([] as IGame[]);
 
     /*useEffect(() => {
         async function loadGames() {
@@ -40,7 +34,9 @@ const Home = () => {
                 const response = await fetch("http://localhost:5000/games", {method: "GET"});
                 const games = await response.json();
                 setGameList(games);
+                setFilteredGameList(games);
                 setSelectedSortOption("")
+                fetchChartData();
             }
             catch (error){
                 console.error(error);
@@ -49,6 +45,59 @@ const Home = () => {
         }
         loadGames();
     }, []);*/
+
+    const loadGames = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/games/page?page=${currentPage}&records=${recordsPerPage}`, { method: "GET" });
+            const { currentRecords, totalPages } = await response.json();
+            setGameList(currentRecords);
+            setFilteredGameList(currentRecords);
+            setTotalPages(totalPages);
+            setSelectedSortOption("");
+        } catch (error) {
+            console.error(error);
+            alert(error);
+        }
+    };
+
+    useEffect(() => {
+        loadGames();
+    }, [currentPage, recordsPerPage]);
+
+    useEffect(() => {
+        const fetchRatingCategoriesData = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/games/filter/ratingCategories");
+                const categories = await response.json();
+                setRatingCategories(categories);
+            } catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        };
+        fetchRatingCategoriesData();
+    }, []);
+
+    const handleRatingCategoryChange = (e: any) => {
+        setSelectedRatingCategory(e.target.value);
+    };
+
+    useEffect(() => {
+        const fetchFilteredGames = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/games/filter/ratingCategories/${selectedRatingCategory}`);
+                const games = await response.json();
+                setFilteredGameList(games);
+            } catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        };
+
+        if (selectedRatingCategory) {
+            fetchFilteredGames();
+        }
+    }, [selectedRatingCategory]);
 
     const onAddGame = () => {
         setShownPage(PageEnum.add);
@@ -70,6 +119,7 @@ const Home = () => {
             });
             const newGame = await response.json();
             setGameList([...gameList, newGame]);
+            loadGames();
         } catch (error) {
             console.error(error);
             alert("Error adding game");
@@ -83,6 +133,7 @@ const Home = () => {
             });
             const updatedGameList = gameList.filter((game) => game.id !== data.id);
             setGameList(updatedGameList);
+            loadGames();
         } catch (error) {
             console.error(error);
             alert("Error deleting game");
@@ -112,6 +163,7 @@ const Home = () => {
                 game.id === updatedGame.id ? updatedGame : game
             );
             setGameList(updatedGameList);
+            loadGames();
         } catch (error) {
             console.error(error);
             alert("Error updating game");
@@ -129,6 +181,7 @@ const Home = () => {
             const response = await fetch(`http://localhost:5000/games/sort/${selectedSortOption}`, { method: "GET" });
             const games = await response.json();
             setGameList(games);
+            loadGames();
         } catch (error) {
             console.error(error);
             alert(error);
@@ -144,6 +197,8 @@ const Home = () => {
     const handleSearchInputChange = (e: any) => {
         setSearchInput(e.target.value);
     };
+    
+    
 
     const handleGenreFilterChange = (e: any) => {
         const genre = e.target.value;
@@ -158,37 +213,23 @@ const Home = () => {
     };
 
     useEffect(() => {
-        const filterGamesByGenres = async () => {
-            try {
-                const queryParams = selectedGenres.map(genre => `genres=${encodeURIComponent(genre)}`).join('&');
-                const response = await fetch(`http://localhost:5000/games/filter/genres?${queryParams}`, { method: "GET" });
-                const games = await response.json();
-                setGameList(games);
-            } catch (error) {
-                console.error(error);
-                alert(error);
-            }
-        };
-    
         filterGamesByGenres();
     }, [selectedGenres]);
     
     
-    useEffect(() => {
-        async function loadGames() {
-            try {
-                const response = await fetch(`http://localhost:5000/games/page?page=${currentPage}&records=${recordsPerPage}`, { method: "GET" });
-                const { currentRecords, totalPages} = await response.json();
-                setGameList(currentRecords);
-                setTotalPages(totalPages);
-                setSelectedSortOption("");
-            } catch (error) {
-                console.error(error);
-                alert(error);
-            }
+    const filterGamesByGenres = async () => {
+        try {
+            const queryParams = selectedGenres.map(genre => `genres=${encodeURIComponent(genre)}`).join('&');
+            const response = await fetch(`http://localhost:5000/games/filter/genres?${queryParams}`, { method: "GET" });
+            const games = await response.json();
+            setFilteredGameList(games);
+
+        } catch (error) {
+            console.error(error);
+            alert(error);
         }
-        loadGames();
-    }, [currentPage, recordsPerPage]);
+    };
+
 
     const handleRecordsPerPageChange = (e:any) => {
         setRecordsPerPage(parseInt(e.target.value));
@@ -200,20 +241,22 @@ const Home = () => {
     };
 
     useEffect(() => {
-        async function fetchChartData() {
-            try {
-                const response = await fetch("http://localhost:5000/games/chart");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch chart data");
-                }
-                const data = await response.json();
-                setGenresData(data);
-            } catch (error) {
-                console.error(error);
-            }
-        }
         fetchChartData();
     }, []);
+
+    const fetchChartData = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/games/chart");
+            if (!response.ok) {
+                throw new Error("Failed to fetch chart data");
+            }
+            const data = await response.json();
+            setGenresData(data);
+            loadGames();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <>
@@ -245,10 +288,16 @@ const Home = () => {
                                 </button>
                             </div>
                         </div>
+                        <select value={selectedRatingCategory} onChange={handleRatingCategoryChange}>
+                <option value="">Select Rating Category</option>
+                {ratingCategories.map((category, index) => (
+                    <option key={index} value={category}>{category}</option>
+                ))}
+            </select>
                         <div className="search-add-space">
                             <input
                                 type="text"
-                                placeholder="Search a game"
+                                placeholder="Search a game by description"
                                 className="search-game"
                                 onChange={handleSearchInputChange}
                             />
@@ -279,7 +328,7 @@ const Home = () => {
                         <section className="filter"></section>
                         <section className="content">
                             <GamesContainer
-                                list={gameList}
+                                list={filteredGameList}
                                 onDeleteButton={deleteGame}
                                 onUpdateButton={onUpdateGame}
                             />
